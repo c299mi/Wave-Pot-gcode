@@ -22,7 +22,7 @@ NOZZLE_DIAM, FILAMENT_DIAM = 0.4, 1.75      # mm
 BED_SIZE_X, BED_SIZE_Y = 235, 235            # mm
 PRINT_MARGIN = 10                           # ビルドプレート端からの余裕（mm）
 
-FIRST_LAYER_H     = 0.20   # mm
+FIRST_LAYER_H     = 0.20   # mm（CLI上書き可能）
 FIRST_LAYER_FLOW  = 1.20   # 初層だけ 120 %
 LAYER_HEIGHT      = 0.40   # mm
 LINE_WIDTH        = 0.45   # mm
@@ -37,6 +37,17 @@ def extrusion_mult(h: float) -> float:
     if abs(h - FIRST_LAYER_H) < 1e-6:
         base *= FIRST_LAYER_FLOW
     return base * FLOW_FACTOR
+
+# ── 印刷設定表示 ─────────────────────────────────────────
+def show_print_settings():
+    """現在の印刷設定を表示"""
+    print("🔧 印刷設定:")
+    print(f"    初層高さ: {FIRST_LAYER_H:.2f}mm")
+    print(f"    レイヤー高さ: {LAYER_HEIGHT:.2f}mm")
+    print(f"    初層フロー: {FIRST_LAYER_FLOW:.0%}")
+    print(f"    フロー係数: {FLOW_FACTOR:.2f}")
+    print(f"    コーナー速度係数: {CORNER_FACTOR:.2f}")
+    print()
 
 # ── 中心座標計算 ───────────────────────────────────────────
 def calculate_center(width: float, height: float) -> tuple[float, float]:
@@ -259,7 +270,7 @@ def generate_part(*, outfile, width, height, phase, amp,
 
 # ── CLI ───────────────────────────────────────────────────
 def main():
-    global FLOW_FACTOR, CORNER_FACTOR
+    global FLOW_FACTOR, CORNER_FACTOR, FIRST_LAYER_H
     ap = argparse.ArgumentParser("Snake-grid bottom + wave walls G-code")
     ap.add_argument("-o", "--outfile", default="part.gcode")
     ap.add_argument("--width", type=float, default=71.6)
@@ -275,13 +286,20 @@ def main():
     ap.add_argument("--z-max", type=float, default=25.0)
     ap.add_argument("--flow-factor", type=float, default=1.0)
     ap.add_argument("--corner-factor", type=float, default=1.0)
-    # 中心座標の手動指定オプション追加
+    # 初層高さ指定オプション追加
+    ap.add_argument("--first-layer-height", type=float, default=0.20,
+                    help="初層のZ軸高さ（mm）デフォルト: 0.20")
+    # 中心座標の手動指定オプション
     ap.add_argument("--center-x", type=float, help="手動で中心X座標を指定")
     ap.add_argument("--center-y", type=float, help="手動で中心Y座標を指定")
     args, _ = ap.parse_known_args()
 
     FLOW_FACTOR   = args.flow_factor
     CORNER_FACTOR = max(0.05, min(args.corner_factor, 1.0))
+    FIRST_LAYER_H = max(0.05, min(args.first_layer_height, 1.0))  # 0.05〜1.0mmの範囲で制限
+
+    # 印刷設定を表示
+    show_print_settings()
 
     wx, wy = (max(1, round(args.width  / args.wavelength)),
               max(1, round(args.height / args.wavelength))) if args.wavelength > 0 \
