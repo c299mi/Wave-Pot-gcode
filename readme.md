@@ -46,6 +46,30 @@ python rect_wave_pot_grid_bottom.py \
 
 ---
 
+## サンプル出力
+
+実際に印刷した結果のサンプル画像です：
+
+<div align="center">
+  <img src="sample/sample1.jpg" alt="Wave-Pot サンプル1" width="400"/>
+  <br>
+  <em>波形側壁と格子底面を持つポット</em>
+</div>
+
+<div align="center">
+  <img src="sample/sample2.jpg" alt="Wave-Pot サンプル2" width="400"/>
+  <br>
+  <em>噛み合うペアのポット（位相0とπ）</em>
+</div>
+
+**特徴:**
+- 🌊 **波形側壁**: 美しい曲線で強度と見た目を両立
+- 🔲 **格子底面**: 軽量でありながら十分な強度
+- 🔗 **噛み合い**: 位相差でぴったり組み合わせ可能
+- ⚡ **1mmノズル**: 高速印刷で実用的
+
+---
+
 ## コマンドラインオプション一覧
 
 | オプション                         | 既定値          | 説明                                     |
